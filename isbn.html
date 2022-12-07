@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <title>書誌情報取得サンプル</title>
+
+    <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+<form>
+  <table>
+    <tbody>
+      <tr>
+        <th>ISBN</th>
+        <td>
+          <input id="isbn" type="text" name="isbn" value="" autofocus>
+        
+        </td>
+      </tr>
+      <tr>
+        <th>ISBNデータ取得</th>
+        <td>
+        <button id="getBookInfo" class="btn btn-default">openBDから書誌情報を取得</button>  
+        </br><button id="getBookInfowithtab" class="btn btn-default">openBDから書誌情報（タブ区切り）取得</button>
+        </td>
+      </tr>
+      <tr>
+        <th>タイトル</th>
+        <td><input id="title" type="text" name="title" value=""></td>
+      </tr>
+      <tr>
+        <th>著者名</th>
+        <td><input id="author" type="text" name="author" value="" ></td>
+      </tr>
+      <tr>
+        <th>出版社</th>
+        <td><input id="publisher" type="text" name="publisher" value="" ></td>
+      </tr>
+      <tr>
+        <th>出版年月</th>
+        <td><input id="pubdate" type="text"  name="pubdate" value="" ></td>
+      </tr>
+    </tbody>
+  </table>
+</form>
+
+<script type="text/javascript">
+    $(function() {
+            $('#getBookInfo').click( function( e ) {
+                e.preventDefault();
+                const isbn = $("#isbn").val();
+                const url = "https://api.openbd.jp/v1/get?isbn=" + isbn;
+
+                $.getJSON( url, function( data ) {
+                    if( data[0] == null ) {
+                        alert("データが見つかりません");
+                    } else {
+                        if( data[0].summary.cover == "" ){
+                            $("#thumbnail").html('<img src=\"\" />');
+                        } else {
+                            $("#thumbnail").html('<img src=\"' + data[0].summary.cover + '\" style=\"border:solid 1px #000000\" />');
+                        }
+                        $("#title").val(data[0].summary.title);
+                        $("#publisher").val(data[0].summary.publisher);
+                        $("#volume").val(data[0].summary.volume);
+                        $("#series").val(data[0].summary.series);
+                        $("#author").val(data[0].summary.author);
+                        $("#pubdate").val(data[0].summary.pubdate);
+                        $("#cover").val(data[0].summary.cover);
+                        $("#description").val(data[0].onix.CollateralDetail.TextContent[0].Text);
+                    }
+        var puby = pubdate.value.substring(0,4) + '年'
+        var text = '『' + title.value + '』（' + author.value + '　' + publisher.value + '　' + puby + ')';
+        navigator.clipboard.writeText(text);
+                });
+            });
+       
+});
+</script>
+<script type="text/javascript">
+    $(function() {
+            $('#getBookInfowithtab').click( function( f ) {
+                f.preventDefault();
+                const isbn = $("#isbn").val();
+                const url = "https://api.openbd.jp/v1/get?isbn=" + isbn;
+
+                $.getJSON( url, function( data ) {
+                    if( data[0] == null ) {
+                        alert("データが見つかりません");
+                    } else {
+                        if( data[0].summary.cover == "" ){
+                            $("#thumbnail").html('<img src=\"\" />');
+                        } else {
+                            $("#thumbnail").html('<img src=\"' + data[0].summary.cover + '\" style=\"border:solid 1px #000000\" />');
+                        }
+                        $("#title").val(data[0].summary.title);
+                        $("#publisher").val(data[0].summary.publisher);
+                        $("#volume").val(data[0].summary.volume);
+                        $("#series").val(data[0].summary.series);
+                        $("#author").val(data[0].summary.author);
+                        $("#pubdate").val(data[0].summary.pubdate);
+                        $("#cover").val(data[0].summary.cover);
+                        $("#description").val(data[0].onix.CollateralDetail.TextContent[0].Text);
+                    }
+       var pubym = pubdate.value.substring(0,4) + '年' + pubdate.value.substr(4,2) + '月'
+
+        var text = title.value + '\t' + author.value + '\t' + publisher.value + '\t' + pubym;
+        navigator.clipboard.writeText(text);
+                });
+            });
+       
+});
+</script>
+
+</body>
+</html>
