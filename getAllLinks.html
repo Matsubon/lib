@@ -8,81 +8,78 @@
 
 </head>
 <body>
-<form>
   <table>
     <tbody>
       <tr>
         <th>URL</th>
         <td>
           <input id="inputUrl" type="text" name="inputUrl" value="" autofocus>
-        
         </td>
       </tr>
             <tr>
         <th>リンク一覧を取得</th>
         <td>
-        <button id="getAllLink" class="btn btn-default" type="button">Webからリンク一覧を取得</button>  
+        <button id="getAllLink" class="btn btn-default" onclick="getAllLinks()">Webからをリンク一覧を取得</button>  
         </td>
       </tr>
        <tr>
         <th>リンク一覧</th>
-        <td><input id="allLinks" type="text"  name="allLinks" value="" ></td>
+        <td><textarea id="allLinks" name="allLinks" rows="10"></textarea></td>
       </tr>
     </tbody>
   </table>
-</form>
 
 <script type="text/javascript">
-  // ボタンをクリックしたときに実行される関数
-  document.getElementById("getAllLink").addEventListener("click", function() {
-    // URLを取得
-    const url = document.getElementById("inputUrl").value;
-    
-    // XMLHttpRequestを作成
-    const xhr = new XMLHttpRequest();
+function getAllLinks() {
+  const inputUrl = document.getElementById("inputUrl").value;
+  // XMLHttpRequestを作成
+  const xhr = new XMLHttpRequest();
 
-    // HTMLを取得するためのGETリクエストを送信
-    xhr.open("GET", url);
-    xhr.send();
+  // HTMLを取得するためのGETリクエストを送信
+  xhr.open("GET", inputUrl);
+  xhr.send();
 
-    // レスポンスを受信したときの処理
-    xhr.onreadystatechange = function() {
-      // リクエストが完了したかどうかを確認
-      if (this.readyState === 4) {
-        // レスポンスが正常に返されたかどうかを確認
-        if (this.status === 200) {
-          // HTMLを解析するためにDOMParserを使用
-          const parser = new DOMParser();
-          const htmlDoc = parser.parseFromString(this.responseText, "text/html");
+  // レスポンスを受信したときの処理
+  xhr.onreadystatechange = function() {
+    // リクエストが完了したかどうかを確認
+    if (this.readyState === 4) {
+      // レスポンスが正常に返されたかどうかを確認
+      if (this.status === 200) {
+        // HTMLを解析するためにDOMParserを使用
+        const parser = new DOMParser();
+        const htmlDoc = parser.parseFromString(this.responseText, "text/html");
 
-          // <a>タグをすべて取得
-          const links = htmlDoc.getElementsByTagName("a");
+        // <a>タグをすべて取得
+        const links = htmlDoc.getElementsByTagName("a");
 
-          // リンク一覧とinnertextを保存するための配列
-          const linkList = [];
+        // リンク一覧とinnertextを保存するための配列
+        const linkList = [];
 
-          // <a>タグの数だけループ
-          for (let i = 0; i < links.length; i++) {
-            // href属性とinnertextを取得
-            const href = links[i].getAttribute("href");
-            const text = links[i].innerText;
+        // <a>タグの数だけループ
+        for (let i = 0; i < links.length; i++) {
+          // href属性とinnertextを取得
+          const href = links[i].getAttribute("href");
+          const text = links[i].innerText;
 
-            // href属性がnullでない場合はリンク一覧に追加
-            if (href !== null) {
-              linkList.push({ href: href, text: text });
-            }
+          // href属性がnullでない場合はリンク一覧に追加
+          if (href !== null) {
+            linkList.push({ href: href, text: text });
           }
-
-          // リンク一覧を取得し、画面に表示
-          const linkResult = document.getElementById("allLinks");
-          linkResult.value = linkList.map(link => `${link.text}: ${link.href}`).join("\n");
-
-        } else {
-          console.log("エラーが発生しました");
         }
+
+        // リンク一覧とinnertextをテキストエリアに表示
+        const linkResult = document.getElementById('allLinks');
+        let output = '';
+        for (let i = 0; i < linkList.length; i++) {
+          output += linkList[i].href + '\n';
+        }
+        linkResult.value = output;
+      } else {
+        console.log("エラーが発生しました");
       }
-    };
-  });
+    }
+  };
+}
 </script>
 </body>
 </html>
