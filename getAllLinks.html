@@ -1,85 +1,85 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head>
+  <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
     <title>リンク一覧取得</title>
+  </head>
+  <body>
+    <form>
+      <table>
+        <tbody>
+          <tr>
+            <th>URL</th>
+            <td>
+              <input id="inputUrl" type="text" name="inputUrl" value="" autofocus>
+            </td>
+          </tr>
+          <tr>
+            <th>リンク一覧を取得</th>
+            <td>
+              <button id="getAllLink" class="btn btn-default" type="button">Webからリンク一覧を取得</button>  
+            </td>
+          </tr>
+          <tr>
+            <th>リンク一覧</th>
+            <td>
+              <textarea id="allLinks" name="allLinks" rows="10" cols="50" readonly></textarea>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+    <script type="text/javascript">
+      // ボタンクリック時にリンク一覧を取得する関数
+      function getLinks() {
+        // URLを指定
+        const url = document.querySelector("#inputUrl").value;
+        // XMLHttpRequestを作成
+        const xhr = new XMLHttpRequest();
 
-</head>
-<body>
-  <table>
-    <tbody>
-      <tr>
-        <th>URL</th>
-        <td>
-          <input id="inputUrl" type="text" name="inputUrl" value="" autofocus>
-        </td>
-      </tr>
-            <tr>
-        <th>リンク一覧を取得</th>
-        <td>
-        <button id="getAllLink" class="btn btn-default" onclick="getAllLinks()">Webからをリンク一覧を取得</button>  
-        </td>
-      </tr>
-       <tr>
-        <th>リンク一覧</th>
-        <td><textarea id="allLinks" name="allLinks" rows="10"></textarea></td>
-      </tr>
-    </tbody>
-  </table>
+        // HTMLを取得するためのGETリクエストを送信
+        xhr.open("GET", url);
+        xhr.send();
 
-<script type="text/javascript">
-function getAllLinks() {
-  const inputUrl = document.getElementById("inputUrl").value;
-  // XMLHttpRequestを作成
-  const xhr = new XMLHttpRequest();
+        // レスポンスを受信したときの処理
+        xhr.onreadystatechange = function() {
+          // リクエストが完了したかどうかを確認
+          if (this.readyState === 4) {
+            // レスポンスが正常に返されたかどうかを確認
+            if (this.status === 200) {
+              // HTMLを解析するためにDOMParserを使用
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(this.responseText, "text/html");
 
-  // HTMLを取得するためのGETリクエストを送信
-  xhr.open("GET", inputUrl);
-  xhr.send();
+              // <a>タグをすべて取得
+              const links = htmlDoc.getElementsByTagName("a");
 
-  // レスポンスを受信したときの処理
-  xhr.onreadystatechange = function() {
-    // リクエストが完了したかどうかを確認
-    if (this.readyState === 4) {
-      // レスポンスが正常に返されたかどうかを確認
-      if (this.status === 200) {
-        // HTMLを解析するためにDOMParserを使用
-        const parser = new DOMParser();
-        const htmlDoc = parser.parseFromString(this.responseText, "text/html");
+              // リンク一覧を保存するための配列
+              const linkList = [];
 
-        // <a>タグをすべて取得
-        const links = htmlDoc.getElementsByTagName("a");
+              // <a>タグの数だけループ
+              for (let i = 0; i < links.length; i++) {
+                // href属性を取得
+                const href = links[i].getAttribute("href");
 
-        // リンク一覧とinnertextを保存するための配列
-        const linkList = [];
+                // href属性がnullでない場合はリンク一覧に追加
+                if (href !== null) {
+                  linkList.push(href);
+                }
+              }
 
-        // <a>タグの数だけループ
-        for (let i = 0; i < links.length; i++) {
-          // href属性とinnertextを取得
-          const href = links[i].getAttribute("href");
-          const text = links[i].innerText;
-
-          // href属性がnullでない場合はリンク一覧に追加
-          if (href !== null) {
-            linkList.push({ href: href, text: text });
+              // リンク一覧をテキストエリアに出力
+              document.querySelector("#allLinks").value = linkList.join("\n");
+            } else {
+              console.log("エラーが発生しました");
+            }
           }
-        }
-
-        // リンク一覧とinnertextをテキストエリアに表示
-        const linkResult = document.getElementById('allLinks');
-        let output = '';
-        for (let i = 0; i < linkList.length; i++) {
-          output += linkList[i].href + '\n';
-        }
-        linkResult.value = output;
-      } else {
-        console.log("エラーが発生しました");
+        };
       }
-    }
-  };
-}
-</script>
-</body>
+
+      // ボタンクリック時にgetLinks関数を呼び出す
+      document.querySelector("#getAllLink").addEventListener("click", getLinks);
+    </script>
+  </body>
 </html>
