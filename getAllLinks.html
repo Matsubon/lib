@@ -38,6 +38,9 @@
         // XMLHttpRequestを作成
         const xhr = new XMLHttpRequest();
 
+        // CORSヘッダーを追加
+        xhr.setRequestHeader("Access-Control-Allow-Origin", "*");
+
         // HTMLを取得するためのGETリクエストを送信
         xhr.open("GET", url);
         xhr.send();
@@ -77,6 +80,11 @@
           }
         };
       }
+
+      // ボタンクリック時にgetLinks関数を呼び出す
+      document.querySelector("#getAllLink").addEventListener("click", getLinks);
+   
+
 
       // ボタンクリック時にgetLinks関数を呼び出す
       document.querySelector("#getAllLink").addEventListener("click", getLinks);
